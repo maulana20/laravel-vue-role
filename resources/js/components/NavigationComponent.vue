@@ -49,11 +49,11 @@
 						},
 						{
 							name: 'User',
-							path: 'dashboard'
+							path: 'user'
 						},
 						{
 							name: 'Role',
-							path: 'dashboard'
+							path: 'role'
 						}
 					]
 				}

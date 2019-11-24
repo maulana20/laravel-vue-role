@@ -6,6 +6,9 @@ const routes = [
 	{ path: '/login', name: 'login', component: require('./pages/auth/login.vue').default, meta: { auth: false } },
 	{ path: '/dashboard', name: 'dashboard', component: require('./pages/home.vue').default, meta: { auth: true } },
 	
+	{ path: '/user', name: 'user', component: require('./pages/user/index.vue').default, meta: { auth: true } },
+	{ path: '/role', name: 'role', component: require('./pages/role/index.vue').default, meta: { auth: true } },
+	
 	{ path: '*', component: require('./pages/errors/404.vue').default, meta: { auth: undefined } }
 ]
 

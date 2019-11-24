@@ -1,8 +1,5 @@
 <?php
-
-
 namespace App\Http\Controllers;
-
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,42 +7,34 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use DB;
 
-
 class RoleController extends Controller
 {
 	function __construct()
 	{
-		 $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
-		 $this->middleware('permission:role-create', ['only' => ['create','store']]);
-		 $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
-		 $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+		$this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['page','add']]);
+		$this->middleware('permission:role-create', ['only' => ['create','add','permission']]);
+		$this->middleware('permission:role-edit', ['only' => ['edit','update','permission']]);
+		$this->middleware('permission:role-delete', ['only' => ['destroy']]);
 	}
 	
 	public function page(Request $request)
 	{
 		$roles = Role::orderBy('id','DESC')->paginate(5);
-		// return view('roles.index',compact('roles'))->with('i', ($request->input('page', 1) - 1) * 5);
-		return response()->json(['status' => 'success', compact('roles')], 200);
+		
+		return response()->json($roles, 200);
 	}
 	
-	public function create()
-	{
-		$permission = Permission::get();
-		// return view('roles.create',compact('permission'));
-		return response()->json(['status' => 'success', compact('permission')], 200);
-	}
-	
-	public function store(Request $request)
+	public function add(Request $request)
 	{
 		$this->validate($request, [
 			'name' => 'required|unique:roles,name',
 			'permission' => 'required',
 		]);
 		
-		$role = Role::create(['name' => $request->input('name')]);
-		$role->syncPermissions($request->input('permission'));
+		$role = Role::create(['name' => $request->name]);
+		$role->syncPermissions($request->permission);
 		
-		return redirect()->route('roles.index')->with('success','Role created successfully');
+		return response()->json($role, 200);
 	}
 	
 	public function show($id)
@@ -62,13 +51,12 @@ class RoleController extends Controller
 	public function edit($id)
 	{
 		$role = Role::find($id);
-		$permission = Permission::get();
-		$rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
-			->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
+		$access = DB::table("role_has_permissions")
+			->where("role_has_permissions.role_id", $id)
+			->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
 			->all();
 		
-		// return view('roles.edit',compact('role','permission','rolePermissions'));
-		return response()->json(['status' => 'success', compact('role','rolePermissions')], 200);
+		return response()->json(['role' => $role, 'access' => $access], 200);
 	}
 	
 	public function update(Request $request, $id)
@@ -91,5 +79,12 @@ class RoleController extends Controller
 	{
 		DB::table("roles")->where('id',$id)->delete();
 		return redirect()->route('roles.index')->with('success','Role deleted successfully');
+	}
+	
+	public function permission(Request $request)
+	{
+		$permission = Permission::get();
+		
+		return response()->json($permission, 200);
 	}
 }

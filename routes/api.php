@@ -18,6 +18,9 @@ Route::group(['middleware' => 'auth:api'], function () {
 	// Route::resource('roles','RoleController');
 	Route::prefix('roles')->group(function () {
 		Route::get('page','RoleController@page');
-		Route::get('show/{id}','RoleController@show');
+		Route::get('permission','RoleController@permission');
+		Route::get('edit/{id}','RoleController@edit');
+		Route::post('add','RoleController@add');
+		Route::post('update/{id}','RoleController@update');
 	});
 });
