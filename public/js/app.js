@@ -3476,6 +3476,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.session_active = method;
       this.show_modal = true;
+      this.init();
       axios.get('/roles/permission').then(function (response) {
         _this2.permission = response.data;
         $('#modal_title').html('ADD ROLE');
@@ -3490,6 +3491,7 @@ __webpack_require__.r(__webpack_exports__);
           _this2.role.name = response.data.role.name;
           _this2.access = response.data.access;
           _this2.id = id;
+          if (_this2.access) _this2.onPermission(_this2.access);
           $('#modal_title').html('EDIT ROLE');
         })["catch"](function (error) {
           alert(error.message);
@@ -3498,18 +3500,24 @@ __webpack_require__.r(__webpack_exports__);
         alert('Method not found !');
       }
     },
+    onPermission: function onPermission(access) {
+      var permission = this.permission;
+      var checked = [];
+      permission.forEach(function (data, index) {
+        if (access[data.id] != undefined) checked.push(data.id);
+      });
+      this.role.permission = checked;
+    },
     add: function add() {
       var _this3 = this;
 
-      axios.post('/roles/add', {
+      axios.post('roles/add', {
         name: this.role.name,
         permission: this.role.permission
       }, {
         credential: true
       }).then(function (response) {
         alert('berhasil di simpan');
-
-        _this3.init();
 
         _this3.getPage();
 
@@ -3525,15 +3533,13 @@ __webpack_require__.r(__webpack_exports__);
     update: function update(id) {
       var _this4 = this;
 
-      axios.post('/roles/update/' + id, {
+      axios.post('roles/update/' + id, {
         name: this.role.name,
         permission: this.role.permission
       }, {
         credential: true
       }).then(function (response) {
         alert('berhasil di update');
-
-        _this4.init();
 
         _this4.getPage();
 
@@ -3544,6 +3550,19 @@ __webpack_require__.r(__webpack_exports__);
         } else {
           alert('Connection error !');
         }
+      });
+    },
+    del: function del(id) {
+      var _this5 = this;
+
+      axios.post('roles/delete/' + id, {}, {
+        credential: true
+      }).then(function (response) {
+        alert('berhasil di delete');
+
+        _this5.getPage();
+      })["catch"](function (error) {
+        alert(error.message);
       });
     }
   }
@@ -43136,7 +43155,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "card card-default" }, [
-    _c("div", { staticClass: "card-header" }, [_vm._v("\n\t\tList\n\t")]),
+    _c("div", { staticClass: "card-header" }, [_vm._v("\n\t\tData Role\n\t")]),
     _vm._v(" "),
     _c(
       "div",
@@ -43194,9 +43213,18 @@ var render = function() {
                     [_vm._v("edit")]
                   ),
                   _vm._v(" \n\t\t\t\t\t\t"),
-                  _c("button", { staticClass: "btn btn-danger btn-sm" }, [
-                    _vm._v("del")
-                  ])
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger btn-sm",
+                      on: {
+                        click: function($event) {
+                          return _vm.del(data.id)
+                        }
+                      }
+                    },
+                    [_vm._v("del")]
+                  )
                 ])
               ])
             }),
@@ -43285,7 +43313,6 @@ var render = function() {
                               attrs: { type: "checkbox", id: data.id },
                               domProps: {
                                 value: data.id,
-                                checked: _vm.access[data.id] != undefined,
                                 checked: Array.isArray(_vm.role.permission)
                                   ? _vm._i(_vm.role.permission, data.id) > -1
                                   : _vm.role.permission
@@ -43357,7 +43384,7 @@ var render = function() {
                           staticClass: "btn btn-primary",
                           on: {
                             click: function($event) {
-                              return _vm.update()
+                              return _vm.update(_vm.id)
                             }
                           }
                         },
