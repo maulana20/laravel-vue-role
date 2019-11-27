@@ -14,10 +14,15 @@ Route::prefix('auth')->group(function () {
 Route::group(['middleware' => 'auth:api'], function () {
 	Route::prefix('user')->group(function () {
 		Route::get('page', 'UserController@page');
+		Route::get('edit/{id}','UserController@edit');
+		Route::post('add', 'UserController@add');
+		Route::post('update/{id}','UserController@update');
+		Route::post('delete/{id}','UserController@delete');
 	});
 	// Route::resource('roles','RoleController');
 	Route::prefix('roles')->group(function () {
 		Route::get('page','RoleController@page');
+		Route::get('pluck','RoleController@pluck');
 		Route::get('permission','RoleController@permission');
 		Route::get('edit/{id}','RoleController@edit');
 		Route::post('add','RoleController@add');

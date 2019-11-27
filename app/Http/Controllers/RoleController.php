@@ -11,7 +11,7 @@ class RoleController extends Controller
 {
 	function __construct()
 	{
-		$this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['page','add']]);
+		$this->middleware('permission:role-list|role-create|role-edit', ['only' => ['page','pluck','add']]);
 		$this->middleware('permission:role-create', ['only' => ['create','add','permission']]);
 		$this->middleware('permission:role-edit', ['only' => ['edit','update','permission']]);
 		$this->middleware('permission:role-delete', ['only' => ['destroy']]);
@@ -20,6 +20,13 @@ class RoleController extends Controller
 	public function page(Request $request)
 	{
 		$roles = Role::orderBy('id','DESC')->paginate(5);
+		
+		return response()->json($roles, 200);
+	}
+	
+	public function pluck(Request $request)
+	{
+		$roles = Role::pluck('name','id')->all();
 		
 		return response()->json($roles, 200);
 	}
