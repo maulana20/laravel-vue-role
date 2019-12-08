@@ -42709,7 +42709,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
-    _c("span", { staticClass: "navbar-brand" }, [_vm._v("V 6.2.0")]),
+    _c("span", { staticClass: "navbar-brand" }, [_vm._v("V 6.5.2")]),
     _vm._v(" "),
     _vm._m(0),
     _vm._v(" "),
